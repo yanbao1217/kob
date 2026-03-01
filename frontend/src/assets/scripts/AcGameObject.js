@@ -8,6 +8,7 @@ export class AcGameObject {
     }
 
     start() { // 只执行一次
+        
 
     }
 
