@@ -1,5 +1,18 @@
 <script setup>
-import { RouterLink } from 'vue-router';
+import { useUserStore } from '@/stores/user';
+import { RouterLink, useRouter } from 'vue-router';
+
+const user = useUserStore();
+const router = useRouter();
+
+async function logout() {
+    user.logout()
+    
+    await router.push({
+        name: 'user_account_login'
+    })
+}
+
 </script>
 
 <template>
@@ -18,11 +31,11 @@ import { RouterLink } from 'vue-router';
     <ul class="menu menu-horizontal right">
         <li class="relative"> <!-- 加相对定位，作为下拉菜单的参考 -->
         <details>
-            <summary class="w-30 justify-center">ly</summary>
+            <summary class="w-30 justify-center">{{ user.username }}</summary>
             <!-- 关键修改：加 align-right 让下拉菜单右对齐，z-10 确保层级 -->
             <ul class="p-2 bg-base-100 w-30 z-10 align-right absolute right-0">
             <li><RouterLink :to="{name: 'user_bot_index'}">我的bot</RouterLink></li>
-            <li><a>退出</a></li>
+            <li><a @click="logout">退出</a></li>
             </ul>
         </details>
         </li>

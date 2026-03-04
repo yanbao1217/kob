@@ -24,21 +24,12 @@ public class RegisterServiceImpl implements RegisterService {
     @Override
     public Map<String, String> register(String username, String password, String confirmedPassword) {
         Map <String, String> map = new HashMap<>();
-        if (username == null) {
-            map.put("error_message", "用户名不能为空");
-            return map;
-        }
-        if (password == null || confirmedPassword == null) {
-            map.put("error_message", "密码不能为空");
-            return map;
-        }
 
-        username = username.trim();
-        if (username.isEmpty()) {
+        if (username.isEmpty() || username == null) {
             map.put("error_message", "用户名不能为空");
             return map;
         }
-        if (password.isEmpty() || confirmedPassword.isEmpty()) {
+        if (password.isEmpty() || confirmedPassword.isEmpty() || password == null || confirmedPassword == null) {
             map.put("error_message", "密码不能为空");
             return map;
         }
@@ -67,7 +58,12 @@ public class RegisterServiceImpl implements RegisterService {
         String photo = "";
         User user = new User(null, username, encodedPassword, photo);
         userMapper.insert(user);
+        Integer userId = user.getId();
+
         map.put("error_message", "success");
+        map.put("username", username);
+        map.put("photo", photo);
+        map.put("id", userId.toString());
         return map;
     }
 }

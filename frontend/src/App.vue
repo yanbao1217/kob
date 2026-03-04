@@ -12,23 +12,6 @@ const api = axios.create({
   withCredentials: true 
 });
 
-
-const message = ref("")
-
-onMounted(async () => {
-  try {
-
-    const response = await api.get('/pk/getBotInfo/');
-
-    message.value = response.data;
-    console.log("成功获取后端数据：", message.value); 
-  } catch (error) {
-
-    console.error("请求失败：", error.message);
-    message.value = "请求失败，请检查后端服务！";
-  }
-});
-
 </script>
 
 <template>
