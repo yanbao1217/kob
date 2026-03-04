@@ -62,8 +62,8 @@ public class SecurityConfig {
 
                 // 3️⃣ 请求权限配置
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/user/account/token",
-                                "/user/account/register").permitAll()
+                        .requestMatchers("/user/account/token/",
+                                "/user/account/register/").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
                         .anyRequest().authenticated()
                 )
