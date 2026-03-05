@@ -29,7 +29,6 @@ async function handleLogin() {
                 "photo": ""
             }
             user.setUserInfo(new_user)
-            console.log({"token": data.token})
             router.push({
                 name: 'pk_index'
             })

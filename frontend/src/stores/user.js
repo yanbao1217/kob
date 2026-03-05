@@ -17,8 +17,8 @@ export const useUserStore = defineStore('user', () => {
         photo.value = data.photo
     }
 
-    function setAccessToken(data) {
-        accessToken.value = data.token;
+    function setAccessToken(token) {
+        accessToken.value = token;
     }
 
     function logout() {
