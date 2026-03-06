@@ -25,6 +25,7 @@ onMounted(() => {
             const data = JSON.parse(msg.data)
             if (data.event === "start-matching") { // 匹配成功
                 pk.updateOpponent(data)
+                pk.updateGameMap(data.gamemap)
                 setTimeout(() => {
                     pk.updateStatus("playing")
                 }, 2000)

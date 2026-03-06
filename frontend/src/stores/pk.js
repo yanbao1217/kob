@@ -6,6 +6,7 @@ export const pkStore = defineStore('pker', () => {
     const socket = ref(null)
     const opponent_username = ref("")
     const opponent_photo = ref("")
+    const gamemap = ref(null)
 
     function updateSocket(newSocket) {
         socket.value = newSocket
@@ -20,6 +21,10 @@ export const pkStore = defineStore('pker', () => {
         status.value = newStatus
     }
 
+    function updateGameMap(newGameMap) {
+        gamemap.value = newGameMap
+    }
+
     return {
         status,
         socket,
@@ -27,6 +32,7 @@ export const pkStore = defineStore('pker', () => {
         opponent_username,
         updateOpponent,
         updateSocket,
-        updateStatus
+        updateStatus,
+        updateGameMap
     }
 })
