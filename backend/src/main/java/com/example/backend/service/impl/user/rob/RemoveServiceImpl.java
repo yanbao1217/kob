@@ -42,6 +42,8 @@ public class RemoveServiceImpl implements RemoveService {
 
         robMapper.deleteById(rob_id);
 
+        map.put("error_message", "success");
+
         return map;
     }
 }

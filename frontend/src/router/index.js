@@ -4,6 +4,7 @@ import RanklistIndexView from '@/views/ranklist/RanklistIndexView.vue'
 import RecordIndexView from '@/views/record/RecordIndexView.vue'
 import UserAccountLoginView from '@/views/user/account/UserAccountLoginView.vue'
 import UserAccountRegisterView from '@/views/user/account/UserAccountRegisterView.vue'
+import CreateBot from '@/views/user/bot/component/CreateBot.vue'
 import UpdateBot from '@/views/user/bot/component/UpdateBot.vue'
 import UserBotIndexView from '@/views/user/bot/UserBotIndexView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
@@ -52,9 +53,14 @@ const router = createRouter({
       component: UserAccountRegisterView,
     },
     {
-      path: "/user/update_bot/",
+      path: "/user/update_bot/:botId/",
       name: "user_update_bot",
       component: UpdateBot,
+    },
+    {
+      path: "/user/create_bot/",
+      name: "user_create_bot",
+      component: CreateBot,
     },
     {
     path: "/:pathMatch(.*)*", // 匹配任意未定义的路径

@@ -81,7 +81,7 @@ async function delete_bot(botId) {
                                     <td>{{ bot.title }}</td>
                                     <td>{{ bot.createtime }}</td>
                                     <td>
-                                        <RouterLink :to="{name: 'user_update_bot'}" class="btn text-gray-500 btn-sm btn-ghost">修改</RouterLink>
+                                        <RouterLink :to="{name: 'user_update_bot', params: { botId: bot.id }}" class="btn text-gray-500 btn-sm btn-ghost">修改</RouterLink>
                                         <button @click="delete_bot(bot.id)" class="btn text-red-500 btn-sm btn-ghost">删除</button>
                                     </td>
                                 </tr>
@@ -89,9 +89,9 @@ async function delete_bot(botId) {
                         </table>
                     </div>
                 </div>
-                <button class="btn btn-sm text-gray-500 btn-ghost w-50">
+                <RouterLink :to="{name: 'user_create_bot'}" class="btn btn-sm text-gray-500 btn-ghost w-50">
                     创建bot
-                </button>
+                </RouterLink>
             </div>
         </div>
 
