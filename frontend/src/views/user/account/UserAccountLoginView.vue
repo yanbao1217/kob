@@ -24,7 +24,7 @@ async function handleLogin() {
         } else {
             user.setAccessToken(data.token)
             const new_user = {
-                "id": "",
+                "id": data.user_id,
                 "username": username.value,
                 "photo": ""
             }

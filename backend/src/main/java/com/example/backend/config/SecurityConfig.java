@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
@@ -74,4 +75,13 @@ public class SecurityConfig {
 
         return http.build();
     }
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        // 这是 Spring Security 6.x 推荐的写法，优先级最高，100% 生效
+        return (web) -> web.ignoring()
+                .requestMatchers("/websocket/**"); // 放行 WebSocket 所有路径
+    }
+
+
 }

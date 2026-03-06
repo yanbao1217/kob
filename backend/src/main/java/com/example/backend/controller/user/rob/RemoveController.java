@@ -15,7 +15,6 @@ public class RemoveController {
 
     @PostMapping("user/rob/remove/")
     public Map<String, String> remove(@RequestBody Map<String, String> data) {
-        System.out.println(data);
         return removeService.remove(data);
     }
 }
