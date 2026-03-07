@@ -78,7 +78,7 @@ public class WebSocketServer {
             matchpool.remove(a);
             matchpool.remove(b);
 
-            Game game = new Game(13, 14, 20);
+            Game game = new Game(14, 15, 20);
             game.createMap();
 
             JSONObject respA = new JSONObject();

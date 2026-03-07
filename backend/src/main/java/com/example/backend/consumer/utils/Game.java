@@ -46,10 +46,10 @@ public class Game {
 
         // 给四周加上障碍物
         for (int r = 0; r < this.rows; ++ r) {
-            g[r][0] = g[r][this.rows - 1] = 1;
+            g[r][0] = g[r][this.cols - 1] = 1;
         }
         for (int c = 0; c < this.cols; ++ c) {
-            g[0][c] = g[this.cols - 1][0] = 1;
+            g[0][c] = g[this.rows - 1][c] = 1;
         }
 
         // 创建随机障碍物

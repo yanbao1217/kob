@@ -3,7 +3,7 @@ import MatchGround from '@/components/MatchGround.vue';
 import PlayGround from '@/components/PlayGround.vue';
 import { pkStore } from '@/stores/pk';
 import { useUserStore } from '@/stores/user';
-import { onMounted, onUnmounted } from 'vue';
+import { nextTick, onMounted, onUnmounted } from 'vue';
 
 
 const user = useUserStore();
@@ -21,11 +21,12 @@ onMounted(() => {
             pk.updateSocket(socket)
         }
 
-        socket.onmessage = msg => {
+        socket.onmessage = async msg => {
             const data = JSON.parse(msg.data)
             if (data.event === "start-matching") { // 匹配成功
                 pk.updateOpponent(data)
-                pk.updateGameMap(data.gamemap)
+                pk.gp.value = data.gamemap
+                await nextTick()
                 setTimeout(() => {
                     pk.updateStatus("playing")
                 }, 2000)

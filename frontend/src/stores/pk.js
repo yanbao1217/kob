@@ -1,12 +1,12 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
-export const pkStore = defineStore('pker', () => {
+export const pkStore = defineStore('pk', () => {
     const status = ref("matching") // matching表示匹配，playing表示对战页面
     const socket = ref(null)
     const opponent_username = ref("")
     const opponent_photo = ref("")
-    const gamemap = ref(null)
+    const gp = ref([])
 
     function updateSocket(newSocket) {
         socket.value = newSocket
@@ -21,8 +21,8 @@ export const pkStore = defineStore('pker', () => {
         status.value = newStatus
     }
 
-    function updateGameMap(newGameMap) {
-        gamemap.value = newGameMap
+    function updateGameMap(data) {
+        gp.value = data.gamemap
     }
 
     return {
@@ -30,6 +30,7 @@ export const pkStore = defineStore('pker', () => {
         socket,
         opponent_photo,
         opponent_username,
+        gp,
         updateOpponent,
         updateSocket,
         updateStatus,
