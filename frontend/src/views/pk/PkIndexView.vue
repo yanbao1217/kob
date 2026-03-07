@@ -25,12 +25,24 @@ onMounted(() => {
             const data = JSON.parse(msg.data)
             if (data.event === "start-matching") { // 匹配成功
                 pk.updateOpponent(data)
-                pk.gp.value = data.gamemap
+                pk.updateGame(data.game)
+                pk.gp = data.game.map
+
                 await nextTick()
+
                 setTimeout(() => {
                     pk.updateStatus("playing")
-                }, 2000)
+                }, 200)
                 
+            } else if (data.event === "move") {
+                console.log(data)
+                const game = pk.gameObject;
+                console.log(game)
+                const [snake0, snake1] = game.snakes;
+                snake0.set_direction(data.a_direction);
+                snake1.set_direction(data.b_direction);
+            } else if (data.event === "result") {
+                console.log(data)
             }
         }
 

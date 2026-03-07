@@ -8,7 +8,7 @@ const canvas = ref(null);
 const pk = pkStore();
 
 onMounted(() => {
-    new GameMap(canvas.value.getContext('2d'), parent.value, pk)
+    pk.updateGameObject(new GameMap(canvas.value.getContext('2d'), parent.value, pk));
 })
 
 </script>

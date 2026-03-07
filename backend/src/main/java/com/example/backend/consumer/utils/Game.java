@@ -1,19 +1,61 @@
 package com.example.backend.consumer.utils;
 
-import java.util.Random;
 
-public class Game {
+import com.alibaba.fastjson2.JSONObject;
+import com.example.backend.consumer.WebSocketServer;
+
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class Game extends Thread {
     final private Integer rows;
     final private Integer cols;
     final private Integer inner_walls_count;
     final private int[][] g;
     final private int[] dx = {-1, 0, 1, 0}, dy = {0, 1, 0, -1};
+    private final Player playerA, playerB;
+    private Integer nextStepA = null;
+    private Integer nextStepB = null;
+    private ReentrantLock lock = new ReentrantLock();
 
-    public Game(Integer rows, Integer cols, Integer inner_walls_count) {
+    private String status = "playing";
+    private String loser = ""; // all：平局，A：A输，B：B输
+
+    public Game(Integer rows, Integer cols, Integer inner_walls_count, Integer idA, Integer idB) {
         this.rows = rows;
         this.cols = cols;
         this.inner_walls_count = inner_walls_count;
         this.g = new int[rows][cols];
+        playerA = new Player(idA, this.rows - 2, 1, new ArrayList<>());
+        playerB = new Player(idB, 1, this.cols - 2, new ArrayList<>());
+    }
+
+    public Player getPlayerA() {
+        return this.playerA;
+    }
+    public Player getPlayerB() {
+        return this.playerB;
+    }
+
+    public void setNextStepA(Integer nextStepA) {
+        lock.lock();
+        try {
+            this.nextStepA = nextStepA;
+        } finally {
+            lock.unlock();
+        }
+
+    }
+
+    public void setNextStepB(Integer nextStepB) {
+        lock.lock();
+        try {
+            this.nextStepB = nextStepB;
+        } finally {
+            lock.unlock();
+        }
+
     }
 
     public int[][] getG() {
@@ -73,6 +115,94 @@ public class Game {
     public void createMap() {
         for (int i = 0; i < 1000; ++ i) {
             if (draw()) {
+                break;
+            }
+        }
+    }
+
+    private boolean nextStep() { // 等待两名玩家的下一步操作
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        for (int i = 0; i < 5; ++ i) {
+            try {
+              Thread.sleep(1000);
+              lock.lock();
+              try {
+                  if (nextStepA != null && nextStepB != null) {
+                      playerA.getSteps().add(nextStepA);
+                      playerB.getSteps().add(nextStepB);
+                      return true;
+                  }
+              } finally {
+                  lock.unlock();
+              }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return false;
+    }
+
+    private void judge() { // 判断两名玩家下一步操作是否合法
+
+    }
+
+    private void sendAllMessage(String message) {
+        WebSocketServer.users.get(playerA.getId()).sendMessage(message);
+        WebSocketServer.users.get(playerB.getId()).sendMessage(message);
+    }
+
+    private void sendMove() { // 向两个Client发送移动信息
+        lock.lock();
+        try {
+            JSONObject resp = new JSONObject();
+            resp.put("event", "move");
+            resp.put("a_direction", nextStepA);
+            resp.put("b_direction", nextStepB);
+            nextStepA = nextStepB = null;
+            sendAllMessage(resp.toJSONString());
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private void sendResult() { // 向两个client发送结果
+        JSONObject resp = new JSONObject();
+        resp.put("event", "result");
+        resp.put("loser", loser);
+        sendAllMessage(resp.toJSONString());
+    }
+
+    @Override
+    public void run() {
+        for (int i = 0; i < 1000; ++ i) {
+            if (nextStep()) { // 是否获取了两条蛇的下一步操作
+                judge();
+                if ("playing".equals(status)) {
+                    sendMove();
+                } else {
+                    sendResult();
+                    break;
+                }
+            } else {
+                status = "finished";
+                lock.lock();
+                try {
+                    if (nextStepA == null && nextStepB == null) {
+                        loser = "all";
+                    } else if (nextStepA == null) {
+                        loser = "A";
+                    } else {
+                        loser = "B";
+                    }
+                } finally {
+                    lock.unlock();
+                }
+                sendResult();
                 break;
             }
         }

@@ -8,6 +8,15 @@ export const pkStore = defineStore('pk', () => {
     const opponent_photo = ref("")
     const gp = ref([])
 
+    const a_id = ref(0);
+    const a_sx = ref(0);
+    const a_sy = ref(0);
+    const b_id = ref(0);
+    const b_sx = ref(0);
+    const b_sy = ref(0);
+
+    const gameObject = ref(null)
+
     function updateSocket(newSocket) {
         socket.value = newSocket
     }
@@ -21,8 +30,17 @@ export const pkStore = defineStore('pk', () => {
         status.value = newStatus
     }
 
-    function updateGameMap(data) {
-        gp.value = data.gamemap
+    function updateGame(data) {
+        a_id.value = data.a_id,
+        a_sx.value = data.a_sx,
+        a_sy.value = data.a_sy,
+        b_id.value = data.b_id,
+        b_sx.value = data.b_sx,
+        b_sy.value = data.b_sy;
+    }
+
+    function updateGameObject(newGameObject) {
+        gameObject.value = newGameObject;
     }
 
     return {
@@ -31,9 +49,17 @@ export const pkStore = defineStore('pk', () => {
         opponent_photo,
         opponent_username,
         gp,
+        a_id,
+        a_sx,
+        a_sy,
+        b_id, 
+        b_sx,
+        b_sy,
+        gameObject,
         updateOpponent,
         updateSocket,
         updateStatus,
-        updateGameMap
+        updateGame,
+        updateGameObject
     }
 })
