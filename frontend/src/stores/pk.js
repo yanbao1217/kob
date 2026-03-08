@@ -7,6 +7,7 @@ export const pkStore = defineStore('pk', () => {
     const opponent_username = ref("")
     const opponent_photo = ref("")
     const gp = ref([])
+    const loser = ref("none") // all, A, B
 
     const a_id = ref(0);
     const a_sx = ref(0);
@@ -43,6 +44,10 @@ export const pkStore = defineStore('pk', () => {
         gameObject.value = newGameObject;
     }
 
+    function updateLoser(newLoser) {
+        loser.value = newLoser;
+    }
+
     return {
         status,
         socket,
@@ -56,10 +61,12 @@ export const pkStore = defineStore('pk', () => {
         b_sx,
         b_sy,
         gameObject,
+        loser,
         updateOpponent,
         updateSocket,
         updateStatus,
         updateGame,
-        updateGameObject
+        updateGameObject,
+        updateLoser
     }
 })

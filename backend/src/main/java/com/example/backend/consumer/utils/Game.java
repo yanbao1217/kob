@@ -3,9 +3,9 @@ package com.example.backend.consumer.utils;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.example.backend.consumer.WebSocketServer;
+import com.example.backend.pojo.Record;
 
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Game extends Thread {
@@ -126,9 +126,9 @@ public class Game extends Thread {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        for (int i = 0; i < 5; ++ i) {
+        for (int i = 0; i < 50; ++ i) {
             try {
-              Thread.sleep(1000);
+              Thread.sleep(200);
               lock.lock();
               try {
                   if (nextStepA != null && nextStepB != null) {
@@ -147,8 +147,44 @@ public class Game extends Thread {
         return false;
     }
 
-    private void judge() { // 判断两名玩家下一步操作是否合法
+    private boolean check_valid(List<Cell> cellsA, List<Cell> cellsB) {
+        int n = cellsA.size();
+        Cell head = cellsA.get(n - 1);
+        if (g[head.x][head.y] == 1) return false;
 
+        for (int i = 0; i < n - 1; ++ i) {
+            if (cellsA.get(i).x == head.x && cellsA.get(i).y == head.y) {
+                return false;
+            }
+        }
+
+        for (int i = 0; i < n - 1; ++ i) {
+            if (cellsB.get(i).x == head.x && cellsB.get(i).y == head.y) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private void judge() { // 判断两名玩家下一步操作是否合法
+        List<Cell> cellsA = getPlayerA().getCells();
+        List<Cell> cellsB = getPlayerB().getCells();
+
+        boolean validA = check_valid(cellsA, cellsB);
+        boolean validB = check_valid(cellsB, cellsA);
+
+        if (!validA || !validB) {
+            status = "finished";
+
+            if (!validA && !validB) {
+                loser = "all";
+            } else if (!validA) {
+                loser = "A";
+            } else if (!validB) {
+                loser = "B";
+            }
+        }
     }
 
     private void sendAllMessage(String message) {
@@ -170,10 +206,40 @@ public class Game extends Thread {
         }
     }
 
+    public String mapToString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < g.length; i++) {
+            for (int j = 0; j < g[i].length; j++) {
+                sb.append(g[i][j]);
+            }
+        }
+        return sb.toString();
+    }
+
+    private void saveToDatabase() {
+        Record record = new Record(
+                null,
+                playerA.getId(),
+                playerA.getSx(),
+                playerA.getSy(),
+                playerB.getId(),
+                playerB.getSx(),
+                playerB.getSy(),
+                playerA.stepsToString(),
+                playerB.stepsToString(),
+                mapToString(),
+                loser,
+                new Date()
+        );
+
+        WebSocketServer.recordMapper.insert(record);
+    }
+
     private void sendResult() { // 向两个client发送结果
         JSONObject resp = new JSONObject();
         resp.put("event", "result");
         resp.put("loser", loser);
+        saveToDatabase();
         sendAllMessage(resp.toJSONString());
     }
 
