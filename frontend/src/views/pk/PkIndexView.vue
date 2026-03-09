@@ -53,8 +53,7 @@ onMounted(() => {
                 if (data.loser === "all" || data.loser === "B") {
                     snake1.status = "die";
                 }
-
-            }
+            } 
         }
 
         socket.onclose = () => {
