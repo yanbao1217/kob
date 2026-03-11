@@ -10,11 +10,13 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.1",
+    "ace-builds": "^1.43.6",
     "axios": "^1.13.5",
     "pinia": "^3.0.4",
     "tailwindcss": "^4.2.1",
     "vue": "^3.5.29",
-    "vue-router": "^5.0.3"
+    "vue-router": "^5.0.3",
+    "vue3-ace-editor": "^2.2.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.4",

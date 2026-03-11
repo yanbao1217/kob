@@ -4,6 +4,9 @@ package com.example.backend.consumer.utils;
 import com.alibaba.fastjson2.JSONObject;
 import com.example.backend.consumer.WebSocketServer;
 import com.example.backend.pojo.Record;
+import com.example.backend.pojo.Rob;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
@@ -21,14 +24,27 @@ public class Game extends Thread {
 
     private String status = "playing";
     private String loser = ""; // all：平局，A：A输，B：B输
+    private final static String addRobUrl = "http://127.0.0.1:8082/bot/add/";
 
-    public Game(Integer rows, Integer cols, Integer inner_walls_count, Integer idA, Integer idB) {
+    public Game(Integer rows, Integer cols, Integer inner_walls_count, Integer idA, Rob robA, Integer idB, Rob robB) {
         this.rows = rows;
         this.cols = cols;
         this.inner_walls_count = inner_walls_count;
         this.g = new int[rows][cols];
-        playerA = new Player(idA, this.rows - 2, 1, new ArrayList<>());
-        playerB = new Player(idB, 1, this.cols - 2, new ArrayList<>());
+
+        Integer robIdA = -1, robIdB = -1;
+        String robCodeA = "", robCodeB = "";
+
+        if (robA != null) {
+            robIdA = robA.getId();
+            robCodeA = robA.getContent();
+        }
+        if (robB != null) {
+            robIdB = robB.getId();
+            robCodeB = robB.getContent();
+        }
+        playerA = new Player(idA, robIdA, robCodeA, this.rows - 2, 1, new ArrayList<>());
+        playerB = new Player(idB, robIdB, robCodeB, 1, this.cols - 2, new ArrayList<>());
     }
 
     public Player getPlayerA() {
@@ -120,12 +136,44 @@ public class Game extends Thread {
         }
     }
 
+    private String getInput(Player player) { // 将当前的局面信息，编码成字符串
+        Player me, you;
+        if (playerA.getId().equals(player.getId())) {
+            me = playerA;
+            you = playerB;
+        } else {
+            me = playerB;
+            you = playerA;
+        }
+
+        return mapToString() + "#" +
+                me.getSx() + "#" +
+                me.getSy() + "#(" +
+                me.stepsToString() + ")#" +
+                you.getSx() + "#" +
+                you.getSy() + "#(" +
+                you.stepsToString() + ")";
+    }
+
+    private void sendRobCode(Player player) {
+        if (player.getBotId().equals(-1)) return;  // 亲自出马，不需要执行代码
+        MultiValueMap<String, String> data = new LinkedMultiValueMap<>();
+        data.add("user_id", player.getId().toString());
+        data.add("bot_code", player.getBotCode());
+        data.add("input", getInput(player));
+        WebSocketServer.restTemplate.postForObject(addRobUrl, data, String.class);
+    }
+
     private boolean nextStep() { // 等待两名玩家的下一步操作
         try {
             Thread.sleep(200);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
+        sendRobCode(playerA);
+        sendRobCode(playerB);
+
         for (int i = 0; i < 50; ++ i) {
             try {
               Thread.sleep(200);

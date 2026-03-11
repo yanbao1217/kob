@@ -2,12 +2,13 @@
 import { pkStore } from '@/stores/pk';
 import { useUserStore } from '@/stores/user';
 import { ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
 
 const pk = pkStore()
 const user = useUserStore();
 const msg = ref("")
-const route = useRoute()
+const router = useRouter()
+
 
 watch(() => pk.loser, (newVal) => {
     console.log(pk.a_id)
@@ -27,7 +28,7 @@ async function playAgain() {
     try {
         pk.updateLoser("none")
         pk.updateStatus("matching")
-        await route.push({
+        await router.push({
             name: 'pk_index'
         })
     } catch(err) {
