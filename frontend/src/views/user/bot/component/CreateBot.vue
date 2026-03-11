@@ -1,27 +1,25 @@
 <script setup>
 import api from '@/js/http/api';
 import { useUserStore } from '@/stores/user';
-import { ref } from 'vue';
-import { VAceEditor } from 'vue3-ace-editor'
-import 'ace-builds/src-noconflict/theme-chrome';
-import 'ace-builds/src-noconflict/mode-java';
-import { useRoute } from 'vue-router';
+import { ref, useTemplateRef } from 'vue';
+import AddBotCode from './AddBotCode.vue';
 
 const description = ref('')
 const title = ref('')
-const content = ref('')
 const error_message = ref('')
-const code = ref('')
+
+const codeRef = useTemplateRef('code-ref')
 
 const user = useUserStore()
 
 async function createBot() {
     try {   
+        const content = codeRef.value.myCode
         const res = await api.post("/user/rob/add/",
             {
                 "title": title.value.trim(),
                 "description": description.value.trim(),
-                "content": content.value.trim()
+                "content": content.trim()
             },
             {
                 headers: {
@@ -54,10 +52,9 @@ async function createBot() {
             <textarea v-model="description" placeholder="请输入内容..." rows="5"></textarea>
 
             <label class="label">内容</label>
-            <textarea v-model="content" placeholder="请输入内容..." rows="5"></textarea>
+            <textarea placeholder="请输入内容..." rows="5"></textarea>
 
-            <label class="label">代码</label>
-            <v-ace-editor style="height: 300px" lang="java" theme="chrome" v-model:value="code" rows="10" placeholder="请输入bot代码" />
+            <AddBotCode ref="code-ref" />
 
             <p v-if="error_message" class="text-red-500 text-sm">{{ error_message }}</p>
 

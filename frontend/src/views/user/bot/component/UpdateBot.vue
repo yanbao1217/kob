@@ -1,26 +1,29 @@
 <script setup>
 import api from '@/js/http/api';
 import { useUserStore } from '@/stores/user';
-import { ref } from 'vue';
+import { ref, useTemplateRef } from 'vue';
 import { useRoute } from 'vue-router';
+import AddBotCode from './AddBotCode.vue';
 
 const description = ref('')
 const title = ref('')
-const content = ref('')
 const error_message = ref('')
 
 const route = useRoute();
 const botId = route.params.botId;
 const user = useUserStore();
 
+const codeRef = useTemplateRef('code-ref')
+
 async function updateBot() {
     try {
+        const content = codeRef.value.myCode
         const res = await api.post("/user/rob/update/", 
         {
             "rob_id": botId,
             "description": description.value.trim(),
             "title": title.value.trim(),
-            "content": content.value.trim()
+            "content": content.trim()
         },
         {
             headers: {
@@ -53,7 +56,9 @@ async function updateBot() {
             <textarea v-model="description" placeholder="请输入内容..." rows="5"></textarea>
 
             <label class="label">修改内容</label>
-            <textarea v-model="content" placeholder="请输入内容..." rows="5"></textarea>
+            <textarea placeholder="请输入内容..." rows="5"></textarea>
+
+            <AddBotCode ref="code-ref" />
 
             <p v-if="error_message" class="text-red-500 text-sm">{{ error_message }}</p>
 
