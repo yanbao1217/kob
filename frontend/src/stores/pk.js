@@ -32,6 +32,7 @@ export const pkStore = defineStore('pk', () => {
     }
 
     function updateGame(data) {
+        gp.value = data.map,
         a_id.value = data.a_id,
         a_sx.value = data.a_sx,
         a_sy.value = data.a_sy,

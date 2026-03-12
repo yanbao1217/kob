@@ -3,6 +3,7 @@ import MatchGround from '@/components/MatchGround.vue';
 import PlayGround from '@/components/PlayGround.vue';
 import ResultBoard from '@/components/ResultBoard.vue';
 import { pkStore } from '@/stores/pk';
+import { useRecordStore } from '@/stores/record';
 import { useUserStore } from '@/stores/user';
 import { nextTick, onMounted, onUnmounted } from 'vue';
 
@@ -10,16 +11,18 @@ import { nextTick, onMounted, onUnmounted } from 'vue';
 const user = useUserStore();
 const pk = pkStore();
 const socketUrl = `ws://127.0.0.1:8080/websocket/${user.accessToken}`;
+const record = useRecordStore();
 
 let socket = null;
 onMounted(() => {
     try {
 
         socket = new WebSocket(socketUrl)
-
+        record.updateIsRecord(false)
         socket.onopen = () => {
             console.log("connected!")
             pk.updateSocket(socket)
+            
         }
 
         socket.onmessage = async msg => {
@@ -27,7 +30,6 @@ onMounted(() => {
             if (data.event === "start-matching") { // 匹配成功
                 pk.updateOpponent(data)
                 pk.updateGame(data.game)
-                pk.gp = data.game.map
 
                 await nextTick()
 

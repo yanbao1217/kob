@@ -1,3 +1,4 @@
+import { useRecordStore } from "@/stores/record";
 import { AcGameObject } from "./AcGameObject";
 import { Snake } from "./Snake";
 import { Wall } from "./Wall";
@@ -14,6 +15,7 @@ export class GameMap extends AcGameObject {
         this.map = pk.gp?? [];
         this.rows = this.map.length || 14;
         this.cols = (this.map[0] && this.map[0].length) || 15;
+        this.record = useRecordStore()
         if (this.rows === 0 || this.cols === 0) {
             console.error('GameMap: 地图数据为空或格式错误', this.map);
         }
@@ -46,26 +48,51 @@ export class GameMap extends AcGameObject {
     }
 
     add_listening_events() {
-        this.ctx.canvas.focus();
-        
-        this.ctx.canvas.addEventListener("keydown", e => {
-            let d = -1;
-            if (e.key === 'w') d = 0;
-            else if (e.key === 'd') d = 1;
-            else if (e.key === 's') d = 2;
-            else if (e.key === 'a') d = 3;
-            else if (e.key === "ArrowUp") d = 0;
-            else if (e.key === "ArrowRight") d = 1;
-            else if (e.key === "ArrowDown") d = 2;
-            else if (e.key === "ArrowLeft") d = 3;
+        let record = this.record
+        console.log(this.record)
+        if (record.is_record) {
+            let k = 0;
+            const a_steps = record.a_steps;
+            const b_steps = record.b_steps;
+            const loser = record.record_loser;
+            const [snake0, snake1] = this.snakes;
+            const interval_id = setInterval(() => {
+                if (k >= a_steps.length - 1) {
+                    if (loser === "all" || loser === "A") {
+                        snake0.status = "die";
+                    }
+                    if (loser === "all" || loser === "B") {
+                        snake1.status = "die";
+                    }
+                    clearInterval(interval_id)
+                } else {
+                    snake0.set_direction(parseInt(a_steps[k]))
+                    snake1.set_direction(parseInt(b_steps[k]));
+                    ++ k;
+                }
+            }, 300)
+        } else {
+            this.ctx.canvas.focus();
+            
+            this.ctx.canvas.addEventListener("keydown", e => {
+                let d = -1;
+                if (e.key === 'w') d = 0;
+                else if (e.key === 'd') d = 1;
+                else if (e.key === 's') d = 2;
+                else if (e.key === 'a') d = 3;
+                else if (e.key === "ArrowUp") d = 0;
+                else if (e.key === "ArrowRight") d = 1;
+                else if (e.key === "ArrowDown") d = 2;
+                else if (e.key === "ArrowLeft") d = 3;
 
-            if (d >= 0) {
-                this.pk.socket.send(JSON.stringify({
-                    event: "move",
-                    direction: d,
-                }))
-            }
-        })
+                if (d >= 0) {
+                    this.pk.socket.send(JSON.stringify({
+                        event: "move",
+                        direction: d,
+                    }))
+                }
+            })
+        }
     }
 
     start() {

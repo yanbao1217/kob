@@ -1,6 +1,7 @@
 import NotFound from '@/views/errors/NotFound.vue'
 import PkIndexView from '@/views/pk/PkIndexView.vue'
 import RanklistIndexView from '@/views/ranklist/RanklistIndexView.vue'
+import RecordContentView from '@/views/record/RecordContentView.vue'
 import RecordIndexView from '@/views/record/RecordIndexView.vue'
 import UserAccountLoginView from '@/views/user/account/UserAccountLoginView.vue'
 import UserAccountRegisterView from '@/views/user/account/UserAccountRegisterView.vue'
@@ -27,12 +28,17 @@ const router = createRouter({
       name: "ranklist_index",
       component: RanklistIndexView,
     },
-        {
+    {
       path: "/record/",
       name: "record_index",
       component: RecordIndexView,
     },
-        {
+    {
+      path: "/record/:recordId/",
+      name: "record_content",
+      component: RecordContentView,
+    },
+    {
       path: "/user/bot/",
       name: "user_bot_index",
       component: UserBotIndexView,

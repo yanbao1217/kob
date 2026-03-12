@@ -25,12 +25,10 @@ async function refresh_bots() {
 
 async function delete_bot(botId) {
     try{
-        const res = await api.post("/user/rob/remove/", 
-        {
-            "rob_id": botId
-        },
-        {   headers: {
-                "Authorization": `Bearer ${user.accessToken}`
+        const res = await api.post("/user/rob/remove/", {
+            params: { page: page.value },
+            headers: {
+                Authorization: `Bearer ${user.accessToken}`
             }
         })
 
